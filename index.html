@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gut Check — Blackjack Trainer</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- Top Bar -->
+    <header id="header">
+      <div class="header-brand">
+        <span class="brand-name">GUT CHECK</span>
+        <span class="brand-sub">Blackjack Trainer</span>
+      </div>
+      <div class="header-controls">
+        <div class="toggle-row">
+          <button class="mode-toggle" id="hint-toggle" data-active="true">
+            <span class="toggle-label">HINTS</span>
+            <span class="toggle-pill active">ON</span>
+          </button>
+          <button class="mode-toggle" id="betting-toggle" data-active="false">
+            <span class="toggle-label">BETTING</span>
+            <span class="toggle-pill">OFF</span>
+          </button>
+        </div>
+        <button class="btn-tutorial" id="chart-btn">Strategy Chart</button>
+        <button class="btn-tutorial" id="tutorial-btn">? Tutorial</button>
+      </div>
+    </header>
+
+    <!-- Casino Table -->
+    <div id="table">
+      <div id="table-felt">
+
+        <!-- Shoe (top right) -->
+        <div id="shoe">
+          <div class="shoe-stack"></div>
+          <div class="shoe-label">SHOE</div>
+          <div id="shoe-count">312</div>
+        </div>
+
+        <!-- Dealer Zone -->
+        <div id="dealer-zone">
+          <div class="zone-label">DEALER</div>
+          <div id="dealer-hand" class="hand-area"></div>
+          <div id="dealer-total" class="hand-total"></div>
+        </div>
+
+        <!-- Table Center Text -->
+        <div id="table-center">
+          <div class="felt-text-main">BLACKJACK PAYS 3 to 2</div>
+          <div class="felt-text-sub">Dealer must draw to 16, and stand on all 17s</div>
+          <div class="felt-text-sub">Insurance pays 2 to 1</div>
+        </div>
+
+        <!-- Player Zone -->
+        <div id="player-zone">
+          <div id="player-hands-container"></div>
+          <div class="zone-label">PLAYER</div>
+        </div>
+
+        <!-- Betting Area (conditionally shown) -->
+        <div id="betting-area" class="hidden">
+          <div id="bet-circle">
+            <div id="bet-amount">$0</div>
+          </div>
+          <div id="chip-tray">
+            <button class="chip chip-5"   data-value="5">$5</button>
+            <button class="chip chip-25"  data-value="25">$25</button>
+            <button class="chip chip-50"  data-value="50">$50</button>
+            <button class="chip chip-100" data-value="100">$100</button>
+            <button class="chip chip-500" data-value="500">$500</button>
+            <button class="chip-btn chip-clear" id="clear-bet">CLR</button>
+          </div>
+          <div id="bankroll-row">
+            Bankroll: <span id="bankroll-display">$1,000</span>
+          </div>
+        </div>
+
+        <!-- Hand Result Flash -->
+        <div id="result-message" class="hidden"></div>
+
+      </div>
+    </div>
+
+    <!-- Hint Panel -->
+    <div id="hint-panel">
+      <div class="hint-header">BASIC STRATEGY</div>
+      <div id="hint-situation" class="hint-sit">—</div>
+      <div id="hint-action" class="hint-act"></div>
+      <div id="hint-explanation" class="hint-exp"></div>
+    </div>
+
+    <!-- Decision Toast (shows correct/wrong feedback even when hints are off) -->
+    <div id="decision-toast" class="hidden"></div>
+
+    <!-- Action Bar -->
+    <div id="action-bar">
+      <div class="action-group left">
+        <button class="action-btn" id="btn-surrender" disabled>Surrender</button>
+        <button class="action-btn" id="btn-split"    disabled>Split</button>
+        <button class="action-btn" id="btn-double"   disabled>Double</button>
+      </div>
+      <div class="action-group center">
+        <button class="action-btn primary" id="btn-deal" disabled>DEAL</button>
+        <button class="action-btn primary" id="btn-next" disabled>NEXT HAND</button>
+      </div>
+      <div class="action-group right">
+        <button class="action-btn" id="btn-hit"   disabled>Hit</button>
+        <button class="action-btn" id="btn-stand" disabled>Stand</button>
+      </div>
+    </div>
+
+    <!-- Scoreboard -->
+    <div id="scoreboard">
+      <div class="score-cell">
+        <span class="sc-label">Decisions</span>
+        <span class="sc-val" id="sc-decisions">0</span>
+      </div>
+      <div class="score-cell">
+        <span class="sc-label">Correct</span>
+        <span class="sc-val green" id="sc-correct">0</span>
+      </div>
+      <div class="score-cell">
+        <span class="sc-label">Wrong</span>
+        <span class="sc-val red" id="sc-wrong">0</span>
+      </div>
+      <div class="score-cell">
+        <span class="sc-label">Accuracy</span>
+        <span class="sc-val gold" id="sc-accuracy">—</span>
+      </div>
+      <div class="score-cell hidden" id="sc-bankroll-cell">
+        <span class="sc-label">Bankroll</span>
+        <span class="sc-val" id="sc-bankroll">$1,000</span>
+      </div>
+    </div>
+
+  </div><!-- #app -->
+
+  <!-- Shared backdrop -->
+  <div id="modal-backdrop" class="hidden"></div>
+
+  <!-- Strategy Chart Modal -->
+  <div id="chart-modal" class="modal hidden">
+    <div class="modal-box chart-modal-box">
+      <button id="chart-close" class="modal-close">✕</button>
+      <h2 class="chart-modal-title">Basic Strategy Chart</h2>
+      <div id="chart-body"></div>
+    </div>
+  </div>
+
+  <!-- Tutorial Modal -->
+  <div id="tutorial-modal" class="modal hidden">
+    <div class="modal-box">
+      <button id="tutorial-close" class="modal-close">✕</button>
+      <div id="tutorial-body"></div>
+      <div class="tutorial-footer">
+        <button id="tut-prev" class="btn-sec" disabled>← Back</button>
+        <div id="tut-dots"></div>
+        <button id="tut-next" class="btn-pri">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

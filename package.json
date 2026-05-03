@@ -1,0 +1,17 @@
+{
+  "name": "gut-check-blackjack",
+  "version": "1.0.0",
+  "description": "Browser-based blackjack strategy trainer",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "vite": "^4.5.0"
+  }
+}
