@@ -3,6 +3,7 @@ import { handValue, isSoft, actionLabel, actionExplanation } from './game/strate
 import { Tutorial } from './tutorial/tutorial.js';
 import { StrategyChart } from './ui/strategyChart.js';
 import { AuthModal } from './auth/authModal.js';
+import { AdminDashboard } from './auth/adminDashboard.js';
 import { supabase } from './auth/supabase.js';
 import { loadStats, saveStats } from './auth/statsSync.js';
 
@@ -56,7 +57,8 @@ function clearArea(areaEl) {
 const engine        = new GameEngine();
 const tutorial      = new Tutorial();
 const strategyChart = new StrategyChart();
-const authModal     = new AuthModal();
+const authModal       = new AuthModal();
+const adminDashboard  = new AdminDashboard();
 
 // ── Auth state ────────────────────────────────────────────────────────────────
 
@@ -327,6 +329,7 @@ bettingToggle.addEventListener('click', () => {
 document.getElementById('tutorial-btn').addEventListener('click', () => tutorial.show(0));
 document.getElementById('chart-btn').addEventListener('click',    () => strategyChart.show());
 document.getElementById('auth-btn').addEventListener('click', () => authModal.show('signin'));
+document.getElementById('admin-btn').addEventListener('click', () => adminDashboard.show());
 document.getElementById('signout-btn').addEventListener('click', async () => {
   if (supabase) await supabase.auth.signOut();
 });
@@ -424,18 +427,28 @@ function fmt(n) {
   return `$${n.toLocaleString()}`;
 }
 
-function _showUserChip(user) {
+async function _showUserChip(user) {
   document.getElementById('auth-btn').classList.add('hidden');
-  const name    = user.user_metadata?.full_name || user.email || '?';
-  const short   = user.email ? user.email.split('@')[0] : name;
+  const name  = user.user_metadata?.full_name || user.email || '?';
+  const short = user.email ? user.email.split('@')[0] : name;
   document.getElementById('user-avatar').textContent      = name[0].toUpperCase();
   document.getElementById('user-email-short').textContent = short;
   document.getElementById('user-chip').classList.remove('hidden');
+
+  // Show the admin button only if the logged-in user is the designated admin
+  const adminBtn = document.getElementById('admin-btn');
+  if (supabase) {
+    const { data: isAdmin } = await supabase.rpc('is_admin');
+    adminBtn.classList.toggle('hidden', !isAdmin);
+  } else {
+    adminBtn.classList.add('hidden');
+  }
 }
 
 function _showSignInBtn() {
   document.getElementById('auth-btn').classList.remove('hidden');
   document.getElementById('user-chip').classList.add('hidden');
+  document.getElementById('admin-btn').classList.add('hidden');
 }
 
 function _updateStatsScope() {

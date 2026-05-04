@@ -33,6 +33,7 @@
           <div id="user-chip" class="user-chip hidden">
             <div class="user-avatar" id="user-avatar"></div>
             <span class="user-email-short" id="user-email-short"></span>
+            <button class="btn-tutorial admin-btn hidden" id="admin-btn">Admin</button>
             <button class="user-signout" id="signout-btn">Sign Out</button>
           </div>
         </div>
@@ -170,6 +171,64 @@
         <button id="tut-prev" class="btn-sec" disabled>← Back</button>
         <div id="tut-dots"></div>
         <button id="tut-next" class="btn-pri">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Modal -->
+  <div id="admin-modal" class="modal hidden">
+    <div class="modal-box admin-box">
+      <button class="modal-close" id="admin-close">&#x2715;</button>
+
+      <div class="admin-header">
+        <h2 class="admin-title">Admin Dashboard</h2>
+        <div class="admin-header-right">
+          <span id="admin-status" class="admin-status"></span>
+          <button class="btn-sec admin-refresh-btn" id="admin-refresh">&#x21BB; Refresh</button>
+        </div>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="admin-summary">
+        <div class="adm-card">
+          <span class="adm-card-val" id="adm-users">—</span>
+          <span class="adm-card-label">Total Users</span>
+        </div>
+        <div class="adm-card">
+          <span class="adm-card-val" id="adm-active">—</span>
+          <span class="adm-card-label">Active Users</span>
+        </div>
+        <div class="adm-card">
+          <span class="adm-card-val" id="adm-decisions">—</span>
+          <span class="adm-card-label">Total Decisions</span>
+        </div>
+        <div class="adm-card">
+          <span class="adm-card-val adm-gold" id="adm-accuracy">—</span>
+          <span class="adm-card-label">Avg Accuracy</span>
+        </div>
+      </div>
+
+      <!-- Filter row -->
+      <div class="admin-filter-row">
+        <input type="search" id="admin-search" class="admin-search" placeholder="Filter by email…" />
+      </div>
+
+      <!-- User table -->
+      <div class="admin-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th class="admin-th adm-th-rank">#</th>
+              <th class="admin-th" data-sort="email">Email</th>
+              <th class="admin-th" data-sort="decisions">Decisions</th>
+              <th class="admin-th" data-sort="correct">Correct</th>
+              <th class="admin-th" data-sort="wrong">Wrong</th>
+              <th class="admin-th" data-sort="accuracy">Accuracy</th>
+              <th class="admin-th" data-sort="updated_at">Last Active</th>
+            </tr>
+          </thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
       </div>
     </div>
   </div>

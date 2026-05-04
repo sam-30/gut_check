@@ -1075,6 +1075,188 @@ html, body {
 /* ── Utility ─────────────────────────────────────────────────── */
 .hidden { display: none !important; }
 
+/* ── Admin Dashboard ─────────────────────────────────────────── */
+#admin-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  width: min(1000px, 97vw);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+#admin-modal.hidden { display: none; }
+
+.admin-box { padding: 26px 28px 22px; }
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-title {
+  font-size: 1.2rem;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-status {
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  color: #555;
+}
+.admin-status-error { color: #ef5350; }
+
+.admin-refresh-btn {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+}
+
+/* Summary cards */
+.admin-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.adm-card {
+  background: #0e0e0e;
+  border: 1px solid #222;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.adm-card-val {
+  font-size: 1.9rem;
+  font-weight: bold;
+  color: #ddd;
+  letter-spacing: 1px;
+}
+.adm-card-val.adm-gold { color: var(--gold); }
+
+.adm-card-label {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: #444;
+  text-transform: uppercase;
+}
+
+/* Filter */
+.admin-filter-row {
+  margin-bottom: 14px;
+}
+
+.admin-search {
+  width: 100%;
+  background: #0e0e0e;
+  border: 1px solid #2a2a2a;
+  border-radius: var(--radius);
+  color: #ddd;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 9px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.admin-search:focus { border-color: var(--gold); }
+.admin-search::placeholder { color: #444; }
+
+/* Table */
+.admin-scroll {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid #1a1a1a;
+}
+
+.admin-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 580px;
+}
+
+.admin-th {
+  background: #0a0a0a;
+  color: #555;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #1a1a1a;
+  font-weight: normal;
+  white-space: nowrap;
+  user-select: none;
+}
+.admin-th[data-sort] {
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.admin-th[data-sort]:hover { color: #aaa; }
+.admin-th[data-sort][data-dir="desc"]::after { content: ' ▼'; color: var(--gold); }
+.admin-th[data-sort][data-dir="asc"]::after  { content: ' ▲'; color: var(--gold); }
+.adm-th-rank { width: 40px; text-align: center; }
+
+.adm-row {
+  border-bottom: 1px solid #111;
+  transition: background 0.12s;
+}
+.adm-row:hover { background: #0e0e0e; }
+.adm-row:last-child { border-bottom: none; }
+
+.adm-cell {
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  color: #ccc;
+  white-space: nowrap;
+}
+.adm-rank { text-align: center; color: #444; font-size: 0.78rem; }
+.adm-email {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+.adm-num   { text-align: right; font-variant-numeric: tabular-nums; }
+.adm-date  { color: #555; font-size: 0.8rem; }
+
+.adm-green { color: #4caf50 !important; }
+.adm-gold  { color: var(--gold) !important; }
+.adm-red   { color: #ef5350 !important; }
+
+.adm-empty {
+  text-align: center;
+  color: #444;
+  font-size: 0.88rem;
+  padding: 28px;
+}
+
+/* Admin button in header */
+.admin-btn {
+  border-color: rgba(201,168,76,0.4) !important;
+  color: var(--gold) !important;
+  font-size: 0.8rem !important;
+  padding: 5px 12px !important;
+}
+.admin-btn:hover { border-color: var(--gold) !important; }
+
 /* ── Mobile ──────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   html, body {
@@ -1247,4 +1429,13 @@ html, body {
   /* User chip — hide email on small screens */
   .user-email-short { display: none; }
   .user-signout { padding: 4px 8px; font-size: 0.72rem; }
+
+  /* Admin dashboard */
+  #admin-modal { width: 99vw; max-height: 96dvh; }
+  .admin-box { padding: 16px 12px 14px; }
+  .admin-summary { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .adm-card-val { font-size: 1.4rem; }
+  .admin-th { padding: 8px 8px; font-size: 0.65rem; }
+  .adm-cell { padding: 8px 8px; font-size: 0.8rem; }
+  .adm-email { max-width: 130px; }
 }
