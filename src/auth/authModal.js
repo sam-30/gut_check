@@ -16,11 +16,6 @@ export class AuthModal {
       tab.addEventListener('click', () => this._showTab(tab.dataset.tab))
     );
 
-    document.getElementById('auth-google')
-      .addEventListener('click', () => this._oauthSignIn('google'));
-    document.getElementById('auth-apple')
-      .addEventListener('click',  () => this._oauthSignIn('apple'));
-
     document.getElementById('auth-form')
       .addEventListener('submit', e => this._handleSubmit(e));
 
@@ -82,9 +77,7 @@ export class AuthModal {
   }
 
   _setLoading(on) {
-    ['auth-submit', 'auth-google', 'auth-apple'].forEach(id =>
-      document.getElementById(id).disabled = on
-    );
+    document.getElementById('auth-submit').disabled    = on;
     document.getElementById('auth-submit').textContent = on
       ? 'Please wait…'
       : (this._tab === 'signin' ? 'Sign In' : 'Create Account');
@@ -121,19 +114,6 @@ export class AuthModal {
     this._setLoading(false);
     if (error) { this._showError(this._friendlyError(error)); return; }
     this._showSection('auth-reset-sent');
-  }
-
-  async _oauthSignIn(provider) {
-    this._setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: window.location.origin },
-    });
-    if (error) {
-      this._setLoading(false);
-      this._showError(this._friendlyError(error));
-    }
-    // On success the browser redirects; no further action needed here
   }
 
   _friendlyError(err) {

@@ -938,59 +938,6 @@ html, body {
 .auth-tab:hover { color: #aaa; }
 .auth-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-.auth-oauth {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.btn-oauth {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 11px 16px;
-  border-radius: var(--radius);
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
-  letter-spacing: 0.3px;
-}
-.btn-oauth:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
-.btn-oauth:active:not(:disabled){ transform: translateY(0); }
-.btn-oauth:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.btn-google {
-  background: #fff;
-  border: 1px solid #ddd;
-  color: #3c4043;
-}
-.btn-apple {
-  background: #000;
-  border: 1px solid #333;
-  color: #fff;
-}
-
-.auth-or {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #444;
-  font-size: 0.78rem;
-  letter-spacing: 1px;
-  margin-bottom: 18px;
-}
-.auth-or::before, .auth-or::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #2a2a2a;
-}
-
 .auth-field {
   display: flex;
   flex-direction: column;
