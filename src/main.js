@@ -2,6 +2,9 @@ import { GameEngine, State } from './game/engine.js';
 import { handValue, isSoft, actionLabel, actionExplanation } from './game/strategy.js';
 import { Tutorial } from './tutorial/tutorial.js';
 import { StrategyChart } from './ui/strategyChart.js';
+import { AuthModal } from './auth/authModal.js';
+import { supabase } from './auth/supabase.js';
+import { loadStats, saveStats } from './auth/statsSync.js';
 
 // ── Card rendering ────────────────────────────────────────────────────────────
 
@@ -50,9 +53,31 @@ function clearArea(areaEl) {
 
 // ── App ───────────────────────────────────────────────────────────────────────
 
-const engine   = new GameEngine();
+const engine        = new GameEngine();
 const tutorial      = new Tutorial();
 const strategyChart = new StrategyChart();
+const authModal     = new AuthModal();
+
+// ── Auth state ────────────────────────────────────────────────────────────────
+
+let cloudStats  = { decisions: 0, correct: 0 }; // lifetime totals prior to this session
+let currentUser = null;
+
+if (supabase) {
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    currentUser = session?.user ?? null;
+    if (currentUser) {
+      const stats = await loadStats(currentUser.id);
+      cloudStats  = stats || { decisions: 0, correct: 0 };
+      _showUserChip(currentUser);
+    } else {
+      cloudStats = { decisions: 0, correct: 0 };
+      _showSignInBtn();
+    }
+    updateScoreboard();
+    _updateStatsScope();
+  });
+}
 
 // DOM refs
 const dealerHandEl     = document.getElementById('dealer-hand');
@@ -222,11 +247,19 @@ engine.on('result', ({ type, text }) => {
   dealerTotalEl.textContent = `Total: ${dt > 21 ? dt + ' (BUST)' : dt}`;
 });
 
-engine.on('handComplete', ({ results }) => {
+engine.on('handComplete', async ({ results }) => {
   updateScoreboard();
   if (engine.bettingMode) {
     bankrollEl.textContent = fmt(engine.bankroll);
     scBankroll.textContent = fmt(engine.bankroll);
+  }
+  if (currentUser) {
+    const s = engine.scorer;
+    await saveStats(
+      currentUser.id,
+      cloudStats.decisions + s.decisions,
+      cloudStats.correct   + s.correct,
+    );
   }
 });
 
@@ -293,6 +326,10 @@ bettingToggle.addEventListener('click', () => {
 
 document.getElementById('tutorial-btn').addEventListener('click', () => tutorial.show(0));
 document.getElementById('chart-btn').addEventListener('click',    () => strategyChart.show());
+document.getElementById('auth-btn').addEventListener('click', () => authModal.show('signin'));
+document.getElementById('signout-btn').addEventListener('click', async () => {
+  if (supabase) await supabase.auth.signOut();
+});
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -373,14 +410,37 @@ function flashResult(text, type) {
 
 function updateScoreboard() {
   const s = engine.scorer;
-  scDecisions.textContent = s.decisions;
-  scCorrect.textContent   = s.correct;
-  scWrong.textContent     = s.wrong;
-  scAccuracy.textContent  = s.accuracy !== null ? `${s.accuracy}%` : '—';
+  const d = cloudStats.decisions + s.decisions;
+  const c = cloudStats.correct   + s.correct;
+  const w = d - c;
+  const a = d > 0 ? Math.round(c / d * 100) : null;
+  scDecisions.textContent = d;
+  scCorrect.textContent   = c;
+  scWrong.textContent     = w;
+  scAccuracy.textContent  = a !== null ? `${a}%` : '—';
 }
 
 function fmt(n) {
   return `$${n.toLocaleString()}`;
+}
+
+function _showUserChip(user) {
+  document.getElementById('auth-btn').classList.add('hidden');
+  const name    = user.user_metadata?.full_name || user.email || '?';
+  const short   = user.email ? user.email.split('@')[0] : name;
+  document.getElementById('user-avatar').textContent      = name[0].toUpperCase();
+  document.getElementById('user-email-short').textContent = short;
+  document.getElementById('user-chip').classList.remove('hidden');
+}
+
+function _showSignInBtn() {
+  document.getElementById('auth-btn').classList.remove('hidden');
+  document.getElementById('user-chip').classList.add('hidden');
+}
+
+function _updateStatsScope() {
+  const el = document.getElementById('stats-scope');
+  if (el) el.textContent = currentUser ? 'Lifetime' : 'This Session';
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
